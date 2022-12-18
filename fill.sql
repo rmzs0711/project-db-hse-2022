@@ -1,0 +1,3 @@
+SET SEARCH_PATH = project_db;
+
+INSERT INTO ;
