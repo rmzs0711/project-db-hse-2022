@@ -1,1 +1,58 @@
--- По каждой карте вывести процент побед голубой команды и сравнить его с процентом побед голубой команды во всей игре
+-- -- 1. По каждой карте вывести процент побед голубой команды и сравнить его с процентом побед голубой команды во всей игре
+--
+-- select maps.id,
+--        (count(case matches.winner when 'blue' then 1 end) over (partition by maps.id))::float /
+--        (case (count(matches.id) over (partition by map_id))
+--             when 0 then 1
+--             else (count(matches.id) over (partition by map_id)) end) as blue_winrate
+-- from matches
+--          right join maps on maps.id = matches.map_id
+-- ;
+--
+--
+-- select maps.id,
+--        (count(case matches.winner when 'blue' then 1 end) over (partition by maps.id))::float /
+--        (coalesce(nullif(count(matches.id) over (partition by maps.id), 0), 1)) as blue_winrate
+-- from matches
+--          right join maps on maps.id = matches.map_id
+-- ;
+-- --
+-- -- select maps.id, count(case matches.winner when 'blue' then 1 end)
+-- -- from matches right join maps on maps.id = matches.map_id
+-- -- group by maps.id
+-- -- ;
+--
+--
+-- select p.nickname,
+--        matches.map_id,
+--        (count(case matches.winner when pxm.team then 1 end) over (partition by (p.id, matches.map_id)))::float /
+--        coalesce(nullif(count(matches.id) over (partition by (p.id, matches.map_id)), 0), 1) wr_on_map,
+--        (count(case matches.winner when pxm.team then 1 end) over (partition by p.id))::float /
+--        coalesce(nullif(count(p.id) over (partition by p.id), 0), 1) winrate
+--
+-- from players p
+--          left join (player_x_match pxm
+--     inner join matches on pxm.match_id = matches.id
+--     inner join maps on matches.map_id = maps.id
+--     ) on p.id = pxm.player_id
+-- ;
+--
+-- select p.nickname, map_id,
+--        count(*) over (partition by (p.id, map_id))
+-- --        ,
+-- --        count(*)
+-- --            over (partition by (p.id, matches.map_id, matches.winner))
+-- from players p
+--          left join (player_x_match pxm
+--     inner join matches on pxm.match_id = matches.id
+--     inner join maps on matches.map_id = maps.id
+--     ) on p.id = pxm.player_id;
+--
+-- select *
+-- from players;
+--
+-- select *
+-- from matches
+--          right join maps on maps.id = matches.map_id;
+
+-- todo еще думаю
